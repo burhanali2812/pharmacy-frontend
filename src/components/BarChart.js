@@ -10,7 +10,9 @@ function BarChart() {
   useEffect(() => {
     const fetchSalesData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/auth/sales/daily"); // Fetch daily sales data
+        const response = await fetch(
+          "https://pharmacy-backend-beta.vercel.app/auth/sales/daily"
+        ); // Fetch daily sales data
         const data = await response.json();
         console.log("Fetched Daily Sales Data:", data);
 

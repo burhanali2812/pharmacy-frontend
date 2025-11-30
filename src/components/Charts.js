@@ -1,19 +1,58 @@
 import React, { useEffect, useState } from "react";
 import { Line, Bar, Doughnut } from "react-chartjs-2";
-import { Chart, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
- 
-const Charts = ({ medicines, lowStock, outOfStock, expireMedicines , totalSales}) => {
+const Charts = ({
+  medicines,
+  lowStock,
+  outOfStock,
+  expireMedicines,
+  totalSales,
+}) => {
   const [salesData, setSalesData] = useState({
     monthlySales: Array(12).fill(0),
     totalSales: 0,
   });
-  
+
   // Line Chart (Sales Trends)
   const lineChartData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug","Sep", "Oct", "Nov", "Dec"],
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
     datasets: [
       {
         label: `Total Sales (Rs) ${totalSales}`,
@@ -23,31 +62,34 @@ const Charts = ({ medicines, lowStock, outOfStock, expireMedicines , totalSales}
       },
     ],
   };
- 
+
   useEffect(() => {
     const getMonthlySales = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/auth/monthly-sales', {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                },
-            });
-            if (!response.ok) {
-                console.log("Failed to fetch Monthly Sales");
-            }
-            const data = await response.json();
-            setSalesData({
-              monthlySales: data.monthlySales,
-              totalSales: data.totalSales,
-            });
-        } catch (error) {
-            console.error("Error fetching Monthly sales:", error);
+      try {
+        const response = await fetch(
+          "https://pharmacy-backend-beta.vercel.app/auth/monthly-sales",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          console.log("Failed to fetch Monthly Sales");
         }
+        const data = await response.json();
+        setSalesData({
+          monthlySales: data.monthlySales,
+          totalSales: data.totalSales,
+        });
+      } catch (error) {
+        console.error("Error fetching Monthly sales:", error);
+      }
     };
     getMonthlySales();
-}, []);
+  }, []);
 
   // Bar Chart (Stock Levels)
   const barChartData = {
@@ -55,13 +97,21 @@ const Charts = ({ medicines, lowStock, outOfStock, expireMedicines , totalSales}
     datasets: [
       {
         label: "Stock Count",
-        data: [medicines.length, lowStock.length, outOfStock.length, expireMedicines.length],
-        backgroundColor: ["#3498db", "#FF8C00", "rgb(167, 81, 20)", "rgb(255, 0, 0)"],
+        data: [
+          medicines.length,
+          lowStock.length,
+          outOfStock.length,
+          expireMedicines.length,
+        ],
+        backgroundColor: [
+          "#3498db",
+          "#FF8C00",
+          "rgb(167, 81, 20)",
+          "rgb(255, 0, 0)",
+        ],
       },
     ],
   };
-
-
 
   return (
     <div className="row mt-4">
