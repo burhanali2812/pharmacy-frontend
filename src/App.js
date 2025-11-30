@@ -58,8 +58,8 @@ function App() {
         const data = await response.json();
 
         const email = localStorage.getItem("email");
-        const salesMan = data.filter((user) => user.role === "salesman");
-        const userFind = data.find((user) => user.email === email);
+        const salesMan = data?.filter((user) => user.role === "salesman");
+        const userFind = data?.find((user) => user.email === email);
 
         if (userFind) {
           setUser(userFind);

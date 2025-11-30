@@ -39,7 +39,7 @@ function AddMedicine({ medicines, setMedicines }) {
   };
   useEffect(() => {
     getSuppliers();
-  });
+  },[]);
 
   useEffect(() => {
     const actualPriceNum = parseFloat(actualPrice);
