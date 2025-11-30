@@ -1,0 +1,18 @@
+.low-stock td {
+    color: #FF8C00 !important; /* Dark Orange for better warning visibility */
+    font-weight: bold;
+}
+.end-stock td {
+    color:rgb(167, 81, 20) !important; /* Darker Orange for a critical warning */
+    font-weight: bold;
+}
+.expired td {
+    color: rgb(255, 0, 0) !important; /* Bright Red for urgency */
+    font-weight: bold;
+}
+.color-box {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    border-radius: 3px;
+}
