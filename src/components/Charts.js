@@ -55,7 +55,7 @@ const Charts = ({
     ],
     datasets: [
       {
-        label: `Total Sales (Rs) ${totalSales}`,
+        label: `Total Sales (Rs) ${(totalSales || 0).toFixed(2)}`,
         data: salesData.monthlySales,
         borderColor: "#4CAF50",
         fill: false,
@@ -67,7 +67,7 @@ const Charts = ({
     const getMonthlySales = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/monthly-sales",
+          "https://pharmacy-backend-beta.vercel.app/invoice/monthly-sales",
           {
             method: "GET",
             headers: {

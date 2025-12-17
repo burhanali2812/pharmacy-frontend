@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { showToast } from "./Toastify2";
 import { useNavigate } from "react-router-dom";
-function CheckOut({ cart, setCart, medicines }) {
+function CheckOut({ cart, setCart, medicines, setRefresh }) {
   const [invoices, setInvoices] = useState([]);
   const [discount, setDiscount] = useState(0);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isClearingCart, setIsClearingCart] = useState(false);
   const grandTotal = cart.reduce((sum, med) => sum + med.totalPrice, 0);
   const percentage = (grandTotal * discount) / 100;
   const discountTotal = grandTotal - percentage;
@@ -14,8 +16,11 @@ function CheckOut({ cart, setCart, medicines }) {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
   const handleClearCart = () => {
+    setIsClearingCart(true);
     setCart([]);
+    localStorage.removeItem("cart");
     showToast("success", "Cart has been cleared", 3000);
+    setTimeout(() => setIsClearingCart(false), 500);
   };
   useEffect(() => {
     if (discount > 100) {
@@ -39,7 +44,7 @@ function CheckOut({ cart, setCart, medicines }) {
     const getInvoices = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/get-invoice",
+          "https://pharmacy-backend-beta.vercel.app/invoice/get-invoice",
           {
             method: "GET",
             headers: {
@@ -63,7 +68,7 @@ function CheckOut({ cart, setCart, medicines }) {
   const sendInvoices = async (genInvoiceNumber) => {
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/add-invoice",
+        "https://pharmacy-backend-beta.vercel.app/invoice/add-invoice",
         {
           method: "POST",
           headers: {
@@ -95,30 +100,43 @@ function CheckOut({ cart, setCart, medicines }) {
     }
   };
   const handleCheckout = async () => {
-    let genInvoiceNumber;
-    let isUnique = false;
-
-    while (!isUnique) {
-      genInvoiceNumber = generateInvoiceNumber();
-      const exist = invoices.some(
-        (inv) => inv.invoiceNumber === genInvoiceNumber
-      );
-      if (!exist) {
-        isUnique = true;
-      }
+    // Validation checks
+    if (cart.length === 0) {
+      showToast("warning", "Cart is empty!", 3000);
+      return;
     }
 
-    await sendInvoices(genInvoiceNumber);
+    if (discount > 100) {
+      showToast("error", "Discount cannot exceed 100%", 3000);
+      return;
+    }
 
-    const billData = {
-      cart: cart,
-      grandTotal: grandTotal,
-      discount: discount,
-      discountTotal: discountTotal,
-      invoiceNumber: genInvoiceNumber,
-    };
+    setIsCheckingOut(true);
 
     try {
+      let genInvoiceNumber;
+      let isUnique = false;
+
+      while (!isUnique) {
+        genInvoiceNumber = generateInvoiceNumber();
+        const exist = invoices.some(
+          (inv) => inv.invoiceNumber === genInvoiceNumber
+        );
+        if (!exist) {
+          isUnique = true;
+        }
+      }
+
+      await sendInvoices(genInvoiceNumber);
+
+      const billData = {
+        cart: cart,
+        grandTotal: grandTotal,
+        discount: discount,
+        discountTotal: discountTotal,
+        invoiceNumber: genInvoiceNumber,
+      };
+
       // Update medicine stock in database
       for (const cartMed of cart) {
         const med = medicines.find((med) => med._id === cartMed._id);
@@ -126,7 +144,7 @@ function CheckOut({ cart, setCart, medicines }) {
         const newQuantity = med.quantity - cartMed.quantity;
 
         await fetch(
-          `https://pharmacy-backend-beta.vercel.app/auth/update-medicine/${med._id}`,
+          `https://pharmacy-backend-beta.vercel.app/medicine/update-medicine/${med._id}`,
           {
             method: "PUT",
             headers: {
@@ -139,7 +157,7 @@ function CheckOut({ cart, setCart, medicines }) {
               quantity: newQuantity,
               price: med.price,
               expire: med.expiry,
-            }), // Updating only the quantity
+            }),
           }
         );
       }
@@ -164,18 +182,22 @@ function CheckOut({ cart, setCart, medicines }) {
           body: JSON.stringify(checkoutData),
         }
       );
-      if (response.ok) {
-        showToast("success", "Sales price updated", 3000);
-      }
-      const data = await response.json();
-      console.log(data);
 
-      setCart([]);
-      localStorage.setItem("billData", JSON.stringify(billData));
-      navigate("/bill");
+      if (response.ok) {
+        showToast("success", "Checkout completed successfully!", 3000);
+        setRefresh(true);
+        setCart([]);
+        localStorage.removeItem("cart");
+        localStorage.setItem("billData", JSON.stringify(billData));
+        navigate("/bill");
+      } else {
+        throw new Error("Failed to process checkout");
+      }
     } catch (error) {
       console.error("Error processing checkout:", error);
       showToast("error", "Failed to complete checkout!", 3000);
+    } finally {
+      setIsCheckingOut(false);
     }
   };
 
@@ -238,21 +260,23 @@ function CheckOut({ cart, setCart, medicines }) {
     });
   };
   return (
-    <div className="container mt-4">
-      <h2 className="text-center text-dark">Checkout</h2>
+    <div className="container mt-4 px-2 px-md-3">
+      <h2 className="text-center text-dark mb-4">Checkout</h2>
 
-      <div className="d-flex">
-        <div className="flex-grow-1 me-4">
+      <div className="row g-3 g-md-4">
+        <div className="col-12 col-lg-8">
           {cart.length === 0 ? (
-            <p className="text-center text-warning">No items in cart</p>
+            <p className="text-center text-warning fs-5">No items in cart</p>
           ) : (
             <div className="table-responsive">
               <table className="table table-striped table-hover text-center">
                 <thead>
                   <tr>
-                    <th>Medicine</th>
+                    <th className="d-none d-sm-table-cell">Medicine</th>
+                    <th className="d-table-cell d-sm-none">Med</th>
                     <th>Price</th>
-                    <th>Quantity</th>
+                    <th className="d-none d-md-table-cell">Quantity</th>
+                    <th className="d-table-cell d-md-none">Qty</th>
                     <th>Total</th>
                     <th>Action</th>
                   </tr>
@@ -260,44 +284,69 @@ function CheckOut({ cart, setCart, medicines }) {
                 <tbody>
                   {cart.map((med, index) => (
                     <tr key={index}>
-                      <td>{med.name}</td>
-                      <td>Rs {med.price}</td>
+                      <td
+                        className="text-truncate"
+                        style={{ maxWidth: "150px" }}
+                      >
+                        {med.name}
+                      </td>
+                      <td className="text-nowrap">Rs {med.price}</td>
                       <td>{med.quantity}</td>
-                      <td>Rs {med.totalPrice.toFixed(2)}</td>
+                      <td className="text-nowrap">
+                        Rs {med.totalPrice.toFixed(2)}
+                      </td>
                       <td>
-                        <button
-                          className="btn btn-outline-warning btn-sm mx-1"
-                          onClick={() => decreaseQuantity(med._id)}
-                        >
-                          <i className="fa-solid fa-minus"></i>
-                        </button>
-                        <button
-                          className="btn btn-outline-success btn-sm mx-1"
-                          onClick={() =>
-                            increaseQuantity(med._id, med.quantity)
-                          }
-                        >
-                          <i className="fa-solid fa-plus"></i>
-                        </button>
-                        <button
-                          className="btn btn-outline-danger btn-sm mx-1"
-                          onClick={() => handleDelete(med._id)}
-                        >
-                          <i className="fas fa-trash"></i>
-                        </button>
+                        <div className="d-flex flex-column flex-sm-row justify-content-center gap-1">
+                          <button
+                            className="btn btn-outline-warning btn-sm"
+                            onClick={() => decreaseQuantity(med._id)}
+                          >
+                            <i className="fa-solid fa-minus"></i>
+                          </button>
+                          <button
+                            className="btn btn-outline-success btn-sm"
+                            onClick={() =>
+                              increaseQuantity(med._id, med.quantity)
+                            }
+                          >
+                            <i className="fa-solid fa-plus"></i>
+                          </button>
+                          <button
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => handleDelete(med._id)}
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <div className="d-flex justify-content-end">
+              <div className="d-flex justify-content-center justify-content-sm-end">
                 <button
-                  className="btn btn-outline-success mx-2 my-2"
-                  type="submit"
+                  className="btn btn-outline-success my-2"
+                  type="button"
                   onClick={handleClearCart}
+                  disabled={isClearingCart}
                 >
-                  Clear Cart
-                  <i className="fa-solid fa-trash-can-arrow-up mx-2"></i>
+                  {isClearingCart ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      <span className="d-none d-sm-inline">Clearing...</span>
+                      <span className="d-inline d-sm-none">Clearing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="d-none d-sm-inline">Clear Cart</span>
+                      <span className="d-inline d-sm-none">Clear</span>
+                      <i className="fa-solid fa-trash-can-arrow-up ms-2"></i>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -305,40 +354,52 @@ function CheckOut({ cart, setCart, medicines }) {
         </div>
 
         {cart.length > 0 && (
-          <div className="card" style={{ width: "350px" }}>
-            <div className="card-header bg-dark text-white">
-              <h5 className="card-title mb-0 text-center">SUMMARY</h5>
-            </div>
-            <div className="card-body table-responsive">
-              <table className="table table-striped table-hover text-center">
-                <thead>
-                  <tr>
-                    <th>Medicine</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cart.map((med, index) => (
-                    <tr key={index}>
-                      <td>{med.name}</td>
-                      <td>Rs {med.price}</td>
-                      <td>{med.quantity}</td>
-                      <td>Rs {med.totalPrice.toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="card-footer bg-light p-4">
-              <div className="row align-items-center mb-3">
-                <div className="col-md-5">
-                  <p className="mb-0">
-                    <b>Discount (%)</b>
-                  </p>
+          <div className="col-12 col-lg-4">
+            <div className="card shadow-sm">
+              <div className="card-header bg-dark text-white">
+                <h5 className="card-title mb-0 text-center">SUMMARY</h5>
+              </div>
+              <div className="card-body p-2 p-md-3">
+                <div
+                  className="table-responsive"
+                  style={{ maxHeight: "300px", overflowY: "auto" }}
+                >
+                  <table className="table table-striped table-hover align-middle text-center table-sm">
+                    <thead className="sticky-top bg-white">
+                      <tr>
+                        <th className="d-none d-sm-table-cell">Medicine</th>
+                        <th className="d-table-cell d-sm-none">Med</th>
+                        <th>Price</th>
+                        <th className="d-none d-md-table-cell">Quantity</th>
+                        <th className="d-table-cell d-md-none">Qty</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cart.map((med, index) => (
+                        <tr key={index}>
+                          <td
+                            className="text-truncate"
+                            style={{ maxWidth: "100px" }}
+                          >
+                            {med.name}
+                          </td>
+                          <td className="text-nowrap">Rs {med.price}</td>
+                          <td>{med.quantity}</td>
+                          <td className="text-nowrap">
+                            Rs {med.totalPrice.toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="col-md-7">
+              </div>
+              <div className="card-footer bg-light p-3 p-md-4">
+                <div className="mb-3">
+                  <label className="form-label fw-bold mb-2">
+                    Discount (%)
+                  </label>
                   <input
                     className="form-control"
                     placeholder="Enter discount"
@@ -353,36 +414,52 @@ function CheckOut({ cart, setCart, medicines }) {
                       }
                     }}
                     min="0"
+                    max="100"
+                    disabled={isCheckingOut}
                   />
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-12">
-                  <h6 className="text-end my-3">
-                    Total:{" "}
-                    <span className="text-success">
+                <div>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h6 className="mb-0">Total:</h6>
+                    <span className="text-success fw-bold">
                       Rs {grandTotal.toFixed(2)}
                     </span>
-                  </h6>
-                  <h6 className="text-end my-3">
-                    Discount:{" "}
-                    <span className="text-success">Rs {percentage}</span>
-                  </h6>
-                  <h5 className="text-end my-3">
-                    Grand Total:{" "}
-                    <span className="text-success">
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h6 className="mb-0">Discount:</h6>
+                    <span className="text-success fw-bold">
+                      Rs {percentage.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="mb-0">Grand Total:</h5>
+                    <span className="text-success fw-bold fs-5">
                       Rs {discountTotal.toFixed(2)}
                     </span>
-                  </h5>
+                  </div>
 
-                  <div className="d-flex justify-content-end">
+                  <div className="d-grid">
                     <button
-                      className="btn btn-outline-success my-2"
-                      type="submit"
+                      className="btn btn-success btn-lg"
+                      type="button"
                       onClick={handleCheckout}
+                      disabled={isCheckingOut}
                     >
-                      Check Out
-                      <i className="fa-solid fa-angles-right mx-2"></i>
+                      {isCheckingOut ? (
+                        <>
+                          <span
+                            className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          Check Out
+                          <i className="fa-solid fa-angles-right ms-2"></i>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

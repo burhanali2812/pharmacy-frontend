@@ -19,7 +19,7 @@ function PastSupplier() {
   const getSuppliers = async () => {
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/get-supplier",
+        "https://pharmacy-backend-beta.vercel.app/supplier/get-supplier",
         {
           method: "GET",
           headers: {
@@ -60,7 +60,7 @@ function PastSupplier() {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/delete-permanent-supplier/${passtSupplier._id}`,
+        `https://pharmacy-backend-beta.vercel.app/supplier/delete-permanent-supplier/${passtSupplier._id}`,
         {
           method: "DELETE",
           headers: {
@@ -103,7 +103,7 @@ function PastSupplier() {
     if (!result.isConfirmed) return;
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/recover-supplier/${supplier._id}`,
+        `https://pharmacy-backend-beta.vercel.app/supplier/recover-supplier/${supplier._id}`,
         {
           method: "PUT",
           headers: {
@@ -239,63 +239,62 @@ function PastSupplier() {
           </button>
         </div>
       </div>
-   <div className='table-responsive mt-3'>
-       <table className="table table-striped table-hover align-middle text-center responsive-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>License Number</th>
-            <th>Supplier Name</th>
-            <th>Contact</th>
-            <th>Medicine Quantity</th>
-            <th>Total Cost</th>
-            <th>Paid Amount</th>
-            <th>Pending Amount</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredSupplier.length > 0 ? (
-            filteredSupplier.map((sup, index) => (
-              <tr key={sup._id}>
-                <td>{index + 1}</td>
-                <td>{sup.licenseNumber}</td>
-                <td>{sup.name}</td>
-                <td>{sup.contact}</td>
-                <td>{sup.medicineQuantity}</td>
-                <td>{sup.totalCost}</td>
-                <td>{sup.paidAmount}</td>
-                <td style={{ color: "red" }}>
-                  {sup.totalCost - sup.paidAmount}
-                </td>
+      <div className="table-responsive mt-3">
+        <table className="table table-striped table-hover align-middle text-center responsive-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>License Number</th>
+              <th>Supplier Name</th>
+              <th>Contact</th>
+              <th>Medicine Quantity</th>
+              <th>Total Cost</th>
+              <th>Paid Amount</th>
+              <th>Pending Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredSupplier.length > 0 ? (
+              filteredSupplier.map((sup, index) => (
+                <tr key={sup._id}>
+                  <td>{index + 1}</td>
+                  <td>{sup.licenseNumber}</td>
+                  <td>{sup.name}</td>
+                  <td>{sup.contact}</td>
+                  <td>{sup.medicineQuantity}</td>
+                  <td>{sup.totalCost}</td>
+                  <td>{sup.paidAmount}</td>
+                  <td style={{ color: "red" }}>
+                    {sup.totalCost - sup.paidAmount}
+                  </td>
 
-                <td>
-                  <button
-                    className="btn btn-outline-dark btn-sm mx-1"
-                    onClick={() => handleRecoverSupplier(sup)}
-                  >
-                    <i className="fas fa-recycle"></i>
-                  </button>
-                  <button
-                    className="btn btn-outline-danger btn-sm mx-1"
-                    onClick={() => handleDeletePermanently(sup)}
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
+                  <td>
+                    <button
+                      className="btn btn-outline-dark btn-sm mx-1"
+                      onClick={() => handleRecoverSupplier(sup)}
+                    >
+                      <i className="fas fa-recycle"></i>
+                    </button>
+                    <button
+                      className="btn btn-outline-danger btn-sm mx-1"
+                      onClick={() => handleDeletePermanently(sup)}
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center">
+                  No Suppliers found
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="text-center">
-                No Suppliers found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-   </div>
+            )}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

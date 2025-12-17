@@ -22,7 +22,7 @@ function SupplierDetails() {
     const getSuppliers = async () => {
       try {
         const response = await fetch(
-          `https://pharmacy-backend-beta.vercel.app/auth/get-supplier/${supplierId}`,
+          `https://pharmacy-backend-beta.vercel.app/supplier/get-supplier/${supplierId}`,
           {
             method: "GET",
             headers: {
@@ -47,7 +47,7 @@ function SupplierDetails() {
     const fetchMedicines = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/get-supplier-medicine",
+          "https://pharmacy-backend-beta.vercel.app/supplier/get-supplier-medicine",
           {
             method: "GET",
             headers: {

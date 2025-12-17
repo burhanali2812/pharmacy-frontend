@@ -26,7 +26,7 @@ function Salesman() {
   const getUsers = async () => {
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/get-user",
+        "https://pharmacy-backend-beta.vercel.app/user/get-user",
         {
           method: "GET",
           headers: {
@@ -77,7 +77,7 @@ function Salesman() {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/update-user-role/${user._id}`,
+        `https://pharmacy-backend-beta.vercel.app/user/update-user-role/${user._id}`,
         {
           method: "PUT",
           headers: {
@@ -140,7 +140,7 @@ function Salesman() {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/delete-user/${saleman._id}`,
+        `https://pharmacy-backend-beta.vercel.app/user/delete-user/${saleman._id}`,
         {
           method: "DELETE",
           headers: {
@@ -240,7 +240,7 @@ function Salesman() {
       };
 
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/update-user/${SelectedSalesMan._id}`,
+        `https://pharmacy-backend-beta.vercel.app/user/update-user/${SelectedSalesMan._id}`,
         {
           method: "PUT",
           headers: {
@@ -317,76 +317,75 @@ function Salesman() {
           </div>
         </div>
 
-       <div className='table-responsive mt-3'>
-         <table className="table table-striped table-hover align-middle text-center responsive-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Sales Man Name</th>
-              <th>Contact</th>
-              <th>Email</th>
-              <th>joined At</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map((user, index) => (
-                <tr key={user._id}>
-                  <td>{index + 1}</td>
-                  <td>{user.name}</td>
-                  <td>{user.contact}</td>
-                  <td>{user.email}</td>
-                  <td>{new Date(user.joinedAt).toLocaleString()}</td>
-                  {isPromoting === "SalesManToAdmin" ? (
-                    <td>
-                      <button
-                        className={`btn btn-${
-                          user.role === "admin" ? "danger" : "success"
-                        } btn-sm mx-1`}
-                        onClick={() => makeAdmin(user)}
-                      >
-                        <i
-                          className={`fas ${
-                            user.role === "admin"
-                              ? "fa-user-minus"
-                              : "fa-user-shield"
-                          }`}
-                        ></i>
-                        {user.role === "admin"
-                          ? " Cancel Adminship"
-                          : " Make Admin"}
-                      </button>
-                    </td>
-                  ) : (
-                    <td>
-                      <button
-                        className="btn btn-outline-success btn-sm mx-1"
-                        onClick={() => openEditModal(user)}
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-                      <button
-                        className="btn btn-outline-danger btn-sm mx-1"
-                        onClick={() => handleDeleteSalesMan(user)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              ))
-            ) : (
+        <div className="table-responsive mt-3">
+          <table className="table table-striped table-hover align-middle text-center responsive-table">
+            <thead>
               <tr>
-                <td colSpan="7" className="text-center">
-                  No Sales Man found
-                </td>
+                <th>#</th>
+                <th>Sales Man Name</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>joined At</th>
+                <th>Action</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-
-       </div>
+            </thead>
+            <tbody>
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user, index) => (
+                  <tr key={user._id}>
+                    <td>{index + 1}</td>
+                    <td>{user.name}</td>
+                    <td>{user.contact}</td>
+                    <td>{user.email}</td>
+                    <td>{new Date(user.joinedAt).toLocaleString()}</td>
+                    {isPromoting === "SalesManToAdmin" ? (
+                      <td>
+                        <button
+                          className={`btn btn-${
+                            user.role === "admin" ? "danger" : "success"
+                          } btn-sm mx-1`}
+                          onClick={() => makeAdmin(user)}
+                        >
+                          <i
+                            className={`fas ${
+                              user.role === "admin"
+                                ? "fa-user-minus"
+                                : "fa-user-shield"
+                            }`}
+                          ></i>
+                          {user.role === "admin"
+                            ? " Cancel Adminship"
+                            : " Make Admin"}
+                        </button>
+                      </td>
+                    ) : (
+                      <td>
+                        <button
+                          className="btn btn-outline-success btn-sm mx-1"
+                          onClick={() => openEditModal(user)}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          className="btn btn-outline-danger btn-sm mx-1"
+                          onClick={() => handleDeleteSalesMan(user)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    No Sales Man found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div

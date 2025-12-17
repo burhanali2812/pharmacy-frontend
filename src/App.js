@@ -29,6 +29,7 @@ function App() {
   const [preExpireMedicines, setPreExpiredMedicines] = useState([]);
   const [outOfStock, setOutOfStock] = useState([]);
   const [lowStock, setLowStock] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const [user, setUser] = useState(null);
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("cart");
@@ -43,7 +44,7 @@ function App() {
     const getUsers = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/get-user",
+          "https://pharmacy-backend-beta.vercel.app/user/get-user",
           {
             method: "GET",
             headers: {
@@ -72,13 +73,10 @@ function App() {
     getUsers();
   }, [token]);
 
-  useEffect(() => {
-    if (!token) return;
-
-    const fetchMedicines = async () => {
+     const fetchMedicines = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/get-medicine",
+          "https://pharmacy-backend-beta.vercel.app/medicine/get-medicine",
           {
             method: "GET",
             headers: {
@@ -100,8 +98,17 @@ function App() {
       }
     };
 
+  useEffect(() => {
+    if (!token) return;
     fetchMedicines();
   }, [token]);
+
+  useEffect(() => {
+    if(refresh){
+      fetchMedicines();
+      setRefresh(false);
+    }
+  },[refresh]);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -111,7 +118,7 @@ function App() {
     const expire = medicines.filter((med) => new Date(med.expire) < today);
     setExpiredMedicines(expire);
     const preExpire = medicines.filter((med) => {
-      const expireDate = new Date(med.expire); // Convert string to Date
+      const expireDate = new Date(med.expire);
       const sevenDaysBeforeExpire = new Date(expireDate);
       sevenDaysBeforeExpire.setDate(sevenDaysBeforeExpire.getDate() - 7); // Subtract 7 days
 
@@ -167,6 +174,7 @@ function App() {
                       cart={cart}
                       setCart={setCart}
                       medicines={medicines}
+                      setRefresh={setRefresh}
                     />
                   }
                 />

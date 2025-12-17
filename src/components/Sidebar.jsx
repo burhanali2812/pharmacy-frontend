@@ -127,10 +127,9 @@ function Sidebar({ children, cart, role, user }) {
           <ul className="nav flex-column gap-1">
             {role === "admin" && (
               <li className="nav-item">
-                <a
-                  href="/dashboard"
+                <div
                   className="nav-link text-white d-flex align-items-center"
-                  onClick={() => isMobile && setShowMobileMenu(false)}
+                  onClick={() => {isMobile && setShowMobileMenu(false); navigate("/dashboard")}}
                 >
                   <i
                     className="fas fa-home"
@@ -147,15 +146,14 @@ function Sidebar({ children, cart, role, user }) {
                       Dashboard
                     </span>
                   )}
-                </a>
+                </div>
               </li>
             )}
 
             <li className="nav-item">
-              <a
-                href="/addMedicine"
+              <div
                 className="nav-link text-white d-flex align-items-center"
-                onClick={() => isMobile && setShowMobileMenu(false)}
+                onClick={() => {isMobile && setShowMobileMenu(false); navigate("/addMedicine")}}
               >
                 <i
                   className="fa-solid fa-square-plus"
@@ -172,13 +170,13 @@ function Sidebar({ children, cart, role, user }) {
                     Add Medicine
                   </span>
                 )}
-              </a>
+              </div>
             </li>
             <li className="nav-item">
-              <a
-                href="/buy"
+              <div
+               
                 className="nav-link text-white d-flex align-items-center"
-                onClick={() => isMobile && setShowMobileMenu(false)}
+                onClick={() => {isMobile && setShowMobileMenu(false); navigate("/buy")}}
               >
                 <i
                   className="fa-solid fa-pills"
@@ -195,13 +193,13 @@ function Sidebar({ children, cart, role, user }) {
                     Buy Medicine
                   </span>
                 )}
-              </a>
+              </div>
             </li>
             <li className="nav-item">
-              <a
-                href="/search"
+              <div
+                
                 className="nav-link text-white d-flex align-items-center"
-                onClick={() => isMobile && setShowMobileMenu(false)}
+                onClick={() => {isMobile && setShowMobileMenu(false); navigate("/search")}}
               >
                 <i
                   className="fas fa-edit"
@@ -218,13 +216,13 @@ function Sidebar({ children, cart, role, user }) {
                     Edit Medicine
                   </span>
                 )}
-              </a>
+              </div>
             </li>
             <li className="nav-item">
-              <a
-                href="/prescription"
+              <div
+
                 className="nav-link text-white d-flex align-items-center"
-                onClick={() => isMobile && setShowMobileMenu(false)}
+                onClick={() => {isMobile && setShowMobileMenu(false); navigate("/prescription")}}
               >
                 <i
                   className="fa-solid fa-file-medical"
@@ -241,13 +239,12 @@ function Sidebar({ children, cart, role, user }) {
                     Medicine Prescription
                   </span>
                 )}
-              </a>
+              </div>
             </li>
             <li className="nav-item">
-              <a
-                href="/checkout"
+              <div
                 className="nav-link text-white d-flex align-items-center"
-                onClick={() => isMobile && setShowMobileMenu(false)}
+                onClick={() => {isMobile && setShowMobileMenu(false); navigate("/checkout")}}
               >
                 <i
                   className="fa-solid fa-cart-plus"
@@ -278,13 +275,12 @@ function Sidebar({ children, cart, role, user }) {
                     {cart.length}
                   </span>
                 )}
-              </a>
+              </div>
             </li>
             <li className="nav-item">
-              <a
-                href="/userInvoice"
+              <div
                 className="nav-link text-white d-flex align-items-center"
-                onClick={() => isMobile && setShowMobileMenu(false)}
+                onClick={() => {isMobile && setShowMobileMenu(false); navigate("/userInvoice")}}
               >
                 <i
                   className="fa-solid fa-file-invoice"
@@ -301,7 +297,7 @@ function Sidebar({ children, cart, role, user }) {
                     Invoices
                   </span>
                 )}
-              </a>
+              </div>
             </li>
             <li className="nav-item">
               <div
@@ -381,6 +377,7 @@ function Sidebar({ children, cart, role, user }) {
         }
         .nav-link:hover {
           background: rgba(255, 255, 255, 0.15);
+          cursor: pointer;
         }
         .nav-link:active {
           background: rgba(255, 255, 255, 0.25);

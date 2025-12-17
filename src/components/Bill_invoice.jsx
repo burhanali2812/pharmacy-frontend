@@ -11,7 +11,7 @@ function Bill_invoice() {
       try {
         console.log("Fetching invoice for ID:", id);
         const response = await fetch(
-          `https://pharmacy-backend-beta.vercel.app/auth/get-invoice/${id}`,
+          `https://pharmacy-backend-beta.vercel.app/invoice/get-invoice/${id}`,
           {
             method: "GET",
             headers: {
@@ -61,29 +61,28 @@ function Bill_invoice() {
                 {new Date(invoice.createdAt).toLocaleString()}
               </p>
             </div>
-          <div className="table-responsive mt-3">
+            <div className="table-responsive mt-3">
               <table className="table table-striped table-hover align-middle text-center responsive-table">
-              <thead>
-                <tr>
-                  <th>Medicine</th>
-                  <th>Price</th>
-                  <th>Qty</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoice.medicines.map((med, index) => (
-                  <tr key={index}>
-                    <td>{med.name}</td>
-                    <td>Rs {med.price}</td>
-                    <td>{med.quantity}</td>
-                    <td>Rs {med.totalPrice.toFixed(2)}</td>
+                <thead>
+                  <tr>
+                    <th>Medicine</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-
-          </div>
+                </thead>
+                <tbody>
+                  {invoice.medicines.map((med, index) => (
+                    <tr key={index}>
+                      <td>{med.name}</td>
+                      <td>Rs {med.price}</td>
+                      <td>{med.quantity}</td>
+                      <td>Rs {med.totalPrice.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <hr />
             <p className="text-end">
               <b>Total:</b> Rs {invoice.total.toFixed(2)}

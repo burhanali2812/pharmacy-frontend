@@ -14,12 +14,13 @@ function AddMedicine({ medicines, setMedicines }) {
   const [selectedSuppliers, setSelectedSuppliers] = useState("");
   const [selectedSupplierID, setSelectedSupplierID] = useState({});
   const [supmedicines, setSupMedicines] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const token = useAuth();
   const getSuppliers = async () => {
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/get-supplier-medicine",
+        "https://pharmacy-backend-beta.vercel.app/supplier/get-supplier-medicine",
         {
           method: "GET",
           headers: {
@@ -39,7 +40,7 @@ function AddMedicine({ medicines, setMedicines }) {
   };
   useEffect(() => {
     getSuppliers();
-  },[]);
+  }, []);
 
   useEffect(() => {
     const actualPriceNum = parseFloat(actualPrice);
@@ -55,12 +56,13 @@ function AddMedicine({ medicines, setMedicines }) {
 
   const handleAddMedicine = async (e) => {
     e.preventDefault();
-    await getSuppliers();
-    setPrice(actualPrice + actualPrice * profit);
+
+    // Early validation checks before setting loading state
     if (!Array.isArray(medicines)) {
       showToast("error", "Something went wrong. Please try again.", 3000);
       return;
     }
+
     if (!selectedSuppliers) {
       showToast(
         "error",
@@ -69,7 +71,16 @@ function AddMedicine({ medicines, setMedicines }) {
       );
       return;
     }
-    await getSuppliers();
+
+    if (!name || name.trim() === "") {
+      showToast("error", "Medicine name is required.", 3000);
+      return;
+    }
+
+    if (!sID || sID <= 0) {
+      showToast("error", "Valid Medicine ID is required.", 3000);
+      return;
+    }
 
     const existingMedicine = medicines.find((medicine) => medicine.sID === sID);
     if (existingMedicine) {
@@ -80,11 +91,27 @@ function AddMedicine({ medicines, setMedicines }) {
       );
       return;
     }
-    if (quantity <= 0) {
+
+    if (!quantity || quantity <= 0) {
       showToast("warning", "Quantity must be greater than 0", 3000);
       return;
     }
-    await getSuppliers();
+
+    if (!actualPrice || actualPrice <= 0) {
+      showToast("error", "Actual price must be greater than 0", 3000);
+      return;
+    }
+
+    if (!profit || profit < 0) {
+      showToast("error", "Profit percentage must be 0 or greater", 3000);
+      return;
+    }
+
+    if (!prescription || prescription.trim() === "") {
+      showToast("error", "Prescription is required.", 3000);
+      return;
+    }
+
     let formattedExpire = "";
     if (expire) {
       const dateObj = new Date(expire);
@@ -102,7 +129,9 @@ function AddMedicine({ medicines, setMedicines }) {
       showToast("error", "Expiry date is required.", 3000);
       return;
     }
-    await getSuppliers();
+
+    // Set loading state after all validations pass
+    setIsLoading(true);
 
     const supplierMedicines = supmedicines.filter(
       (med) => med.supplier === selectedSuppliers
@@ -126,7 +155,7 @@ function AddMedicine({ medicines, setMedicines }) {
     try {
       console.log("Selected Supplier:", selectedSupplierID);
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/update-quantity/${selectedSupplierID._id}`,
+        `https://pharmacy-backend-beta.vercel.app/supplier/update-quantity/${selectedSupplierID._id}`,
         {
           method: "PUT",
           headers: {
@@ -141,24 +170,27 @@ function AddMedicine({ medicines, setMedicines }) {
       );
 
       const data = await response.json();
-      if (response.ok) {
-        showToast("success", "Medicine Updated Successfully", 3000);
-        await getSuppliers();
-      } else {
+      if (!response.ok) {
         showToast(
           "error",
-          `Failed to update quantity: ${data.message || "Unknown error"}`,
+          `Failed to update supplier quantity: ${
+            data.message || "Unknown error"
+          }`,
           3000
         );
         console.error("Error response:", data);
+        setIsLoading(false);
+        return;
       }
     } catch (error) {
-      showToast("error", "An error occurred while adding medicine.", 3000);
+      showToast("error", "An error occurred while updating supplier.", 3000);
       console.error("Error:", error);
+      setIsLoading(false);
+      return;
     }
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/add-medicine",
+        "https://pharmacy-backend-beta.vercel.app/medicine/add-Medicine",
         {
           method: "POST",
           headers: {
@@ -180,35 +212,28 @@ function AddMedicine({ medicines, setMedicines }) {
       );
 
       const data = await response.json();
-      if (response.ok) {
-        showToast("success", "Medicine Added Successfully", 3000);
-        await getSuppliers();
-        setMedicines((prevMedicines) => [...prevMedicines, data]);
-        setExpire("");
-        setName("");
-        setPrescription("");
-        setQuantity("");
-        setPrice("");
-        setSID("");
-        setActualPrice("");
-        setProfit("");
-        setSelectedSuppliers("");
-      } else {
+      if (!response.ok) {
         showToast(
           "error",
           `Failed to add medicine: ${data.message || "Unknown error"}`,
           3000
         );
         console.error("Error response:", data);
+        setIsLoading(false);
+        return;
       }
+
+      setMedicines((prevMedicines) => [...prevMedicines, data]);
     } catch (error) {
       showToast("error", "An error occurred while adding medicine.", 3000);
       console.error("Error:", error);
+      setIsLoading(false);
+      return;
     }
 
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/add-supplier-Medicine",
+        "https://pharmacy-backend-beta.vercel.app/supplier/add-supplier-Medicine",
         {
           method: "POST",
           headers: {
@@ -230,27 +255,43 @@ function AddMedicine({ medicines, setMedicines }) {
       );
 
       const data = await response.json();
-      if (response.ok) {
-        showToast("success", "Medicine double Successfully", 3000);
-        await getSuppliers();
-      } else {
+      if (!response.ok) {
         showToast(
           "error",
-          `Failed to add medicine: ${data.message || "Unknown error"}`,
+          `Failed to add supplier medicine: ${data.message || "Unknown error"}`,
           3000
         );
         console.error("Error response:", data);
+        setIsLoading(false);
+        return;
       }
+
+      // All operations successful - show success message and reset form
+      showToast("success", "Medicine Added Successfully!", 3000);
+      await getSuppliers();
+
+      // Reset form fields
+      setExpire("");
+      setName("");
+      setPrescription("");
+      setQuantity("");
+      setPrice("");
+      setSID("");
+      setActualPrice("");
+      setProfit("");
+      setSelectedSuppliers("");
     } catch (error) {
       showToast("error", "An error occurred while adding medicine.", 3000);
       console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   useEffect(() => {
     const getSuppliers = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/get-supplier",
+          "https://pharmacy-backend-beta.vercel.app/supplier/get-supplier",
           {
             method: "GET",
             headers: {
@@ -471,9 +512,23 @@ function AddMedicine({ medicines, setMedicines }) {
                   className="btn btn-outline-success mx-2 my-2"
                   type="submit"
                   onClick={handleAddMedicine}
+                  disabled={isLoading}
                 >
-                  Add Medicine
-                  <i className="fa-solid fa-capsules mx-2"></i>
+                  {isLoading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      Add Medicine
+                      <i className="fa-solid fa-capsules ms-2"></i>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

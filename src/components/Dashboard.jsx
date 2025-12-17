@@ -28,7 +28,7 @@ function Dashboard({
   const getTodaySales = async () => {
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/sales/today",
+        "https://pharmacy-backend-beta.vercel.app/invoice/sales/today",
         {
           method: "GET",
           headers: {
@@ -57,7 +57,7 @@ function Dashboard({
   const getSuppliers = async () => {
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/get-supplier",
+        "https://pharmacy-backend-beta.vercel.app/supplier/get-supplier",
         {
           method: "GET",
           headers: {
@@ -145,7 +145,7 @@ function Dashboard({
       id: 1,
       icon: "fa-coins",
       title: "Total Sales",
-      count: `Rs ${sales.totalSalesPrice}`,
+      count: `Rs ${(sales.totalSalesPrice || 0).toFixed(2)}`,
       description: "Total sales revenue.",
     },
     {
@@ -159,7 +159,9 @@ function Dashboard({
       id: 3,
       icon: "fa-chart-line",
       title: "Non-Discounted Profit",
-      count: `Rs ${(sales.totalSalesPrice - sales.totalActualPrice).toFixed(2)}`,
+      count: `Rs ${(sales.totalSalesPrice - sales.totalActualPrice).toFixed(
+        2
+      )}`,
       description: "Profit without discounts.",
     },
     {

@@ -22,7 +22,7 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
     const getSuppliers = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/get-supplier",
+          "https://pharmacy-backend-beta.vercel.app/supplier/get-supplier",
           {
             method: "GET",
             headers: {
@@ -47,7 +47,7 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
   const fetchMedicines = async () => {
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/get-supplier-medicine",
+        "https://pharmacy-backend-beta.vercel.app/supplier/get-supplier-medicine",
         {
           method: "GET",
           headers: {
@@ -139,7 +139,7 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
     try {
       console.log("Selected Supplier:", selectedSupplierMedicines);
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/update-quantity/${selectedSupplierID._id}`,
+        `https://pharmacy-backend-beta.vercel.app/supplier/update-quantity/${selectedSupplierID._id}`,
         {
           method: "PUT",
           headers: {
@@ -172,7 +172,7 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/update-supplier-medicine/${medicine._id}`,
+        `https://pharmacy-backend-beta.vercel.app/supplier/update-supplier-medicine/${medicine._id}`,
         {
           method: "PUT",
           headers: {
@@ -213,7 +213,7 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
 
     try {
       const response = await fetch(
-        "https://pharmacy-backend-beta.vercel.app/auth/delete-all-medicines",
+        "https://pharmacy-backend-beta.vercel.app/medicine/delete-all-medicines",
         {
           method: "DELETE",
           headers: {
@@ -246,7 +246,7 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/update-medicine/${selectedMedicine._id}`,
+        `https://pharmacy-backend-beta.vercel.app/medicine/update-medicine/${selectedMedicine._id}`,
         {
           method: "PUT",
           headers: {
@@ -296,14 +296,13 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/delete-medicine/${medicineDel._id}`,
+        `https://pharmacy-backend-beta.vercel.app/medicine/delete-medicine/${medicineDel._id}`,
         {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(medicineDel),
         }
       );
       if (!response.ok) {
@@ -455,115 +454,112 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
               </>
             )}
           </div>
-
-         
         </div>
-         {/* Right Side - Stock Indicators */}
-          <div className="d-flex justify-content-end" style={{ marginTop: 30 }}>
-            <div className="d-flex align-items-center me-3">
-              <span
-                className="color-box"
-                style={{
-                  backgroundColor: "rgb(167, 81, 20)",
-                  width: "12px",
-                  height: "12px",
-                  display: "inline-block",
-                  borderRadius: "3px",
-                }}
-              ></span>
-              <span className="ms-2">Out of Stock: {outOfStockCount}</span>
-            </div>
-            <div className="d-flex align-items-center me-3">
-              <span
-                className="color-box"
-                style={{
-                  backgroundColor: "#FF8C00",
-                  width: "12px",
-                  height: "12px",
-                  display: "inline-block",
-                  borderRadius: "3px",
-                }}
-              ></span>
-              <span className="ms-2">Low Stock: {lowStockCount}</span>
-            </div>
-            <div className="d-flex align-items-center">
-              <span
-                className="color-box"
-                style={{
-                  backgroundColor: "rgb(255, 0, 0)",
-                  width: "12px",
-                  height: "12px",
-                  display: "inline-block",
-                  borderRadius: "3px",
-                }}
-              ></span>
-              <span className="ms-2">Expired Medicine: {expireMedicines}</span>
-            </div>
+        {/* Right Side - Stock Indicators */}
+        <div className="d-flex justify-content-end" style={{ marginTop: 30 }}>
+          <div className="d-flex align-items-center me-3">
+            <span
+              className="color-box"
+              style={{
+                backgroundColor: "rgb(167, 81, 20)",
+                width: "12px",
+                height: "12px",
+                display: "inline-block",
+                borderRadius: "3px",
+              }}
+            ></span>
+            <span className="ms-2">Out of Stock: {outOfStockCount}</span>
           </div>
+          <div className="d-flex align-items-center me-3">
+            <span
+              className="color-box"
+              style={{
+                backgroundColor: "#FF8C00",
+                width: "12px",
+                height: "12px",
+                display: "inline-block",
+                borderRadius: "3px",
+              }}
+            ></span>
+            <span className="ms-2">Low Stock: {lowStockCount}</span>
+          </div>
+          <div className="d-flex align-items-center">
+            <span
+              className="color-box"
+              style={{
+                backgroundColor: "rgb(255, 0, 0)",
+                width: "12px",
+                height: "12px",
+                display: "inline-block",
+                borderRadius: "3px",
+              }}
+            ></span>
+            <span className="ms-2">Expired Medicine: {expireMedicines}</span>
+          </div>
+        </div>
 
-       <div className='table-responsive mt-3'>
-         <table className="table table-striped table-hover align-middle text-center responsive-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Medicine ID</th>
-              <th>Medicine Name</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Supplier Name</th>
-              <th>Expiry Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredMedicines.length > 0 ? (
-              filteredMedicines.map((med, index) => {
-                const isExpired = new Date(med.expire) < new Date();
-                const stockClass = isExpired
-                  ? "expired"
-                  : med.quantity === 0
-                  ? "end-stock"
-                  : med.quantity < 10
-                  ? "low-stock"
-                  : "";
-
-                return (
-                  <tr key={med._id} className={stockClass}>
-                    <td>{index + 1}</td>
-                    <td>{med.sID}</td>
-                    <td>{med.name}</td>
-                    <td>{med.quantity}</td>
-                    <td>{med.price}</td>
-                    <td>{med.supplier}</td>
-                    <td>{med.expire}</td>
-                    <td>
-                      <button
-                        className="btn btn-outline-success btn-sm mx-1"
-                        onClick={() => openEditModal(med)}
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-                      <button
-                        className="btn btn-outline-danger btn-sm mx-1"
-                        onClick={() => handleDelete(med)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
+        <div className="table-responsive mt-3">
+          <table className="table table-striped table-hover align-middle text-center responsive-table">
+            <thead>
               <tr>
-                <td colSpan="8" className="text-center">
-                  No medicines found
-                </td>
+                <th>#</th>
+                <th>Medicine ID</th>
+                <th>Medicine Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Supplier Name</th>
+                <th>Expiry Date</th>
+                <th>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredMedicines.length > 0 ? (
+                filteredMedicines.map((med, index) => {
+                  const isExpired = new Date(med.expire) < new Date();
+                  const stockClass = isExpired
+                    ? "expired"
+                    : med.quantity === 0
+                    ? "end-stock"
+                    : med.quantity < 10
+                    ? "low-stock"
+                    : "";
 
-       </div>
+                  return (
+                    <tr key={med._id} className={stockClass}>
+                      <td>{index + 1}</td>
+                      <td>{med.sID}</td>
+                      <td>{med.name}</td>
+                      <td>{med.quantity}</td>
+                      <td>{med.price}</td>
+                      <td>{med.supplier}</td>
+                      <td>{med.expire}</td>
+                      <td>
+                        <button
+                          className="btn btn-outline-success btn-sm mx-1"
+                          onClick={() => openEditModal(med)}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          className="btn btn-outline-danger btn-sm mx-1"
+                          onClick={() => handleDelete(med)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center">
+                    No medicines found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div

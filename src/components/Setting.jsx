@@ -41,7 +41,7 @@ function Setting({ user, setUser }) {
       };
 
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/update-user/${user._id}`,
+        `https://pharmacy-backend-beta.vercel.app/user/update-user/${user._id}`,
         {
           method: "PUT",
           headers: {
@@ -143,6 +143,14 @@ function Setting({ user, setUser }) {
       );
       return;
     }
+    if(oldPassword === newPassword || oldPassword === newConfirmPassword){
+      showToast(
+        "error",
+        "Old password and new password cannot be the same",
+        3000
+      );
+      return;
+    }
     const result = await Swal.fire({
       title: "Are you sure?",
       text: `You are about to Change "${user.name}" password!`,
@@ -157,7 +165,7 @@ function Setting({ user, setUser }) {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/change-password/${user._id}`,
+        `https://pharmacy-backend-beta.vercel.app/user/change-password/${user._id}`,
         {
           method: "PUT",
           headers: {

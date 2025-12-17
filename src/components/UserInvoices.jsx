@@ -18,7 +18,7 @@ function UserInvoices({ role }) {
     const getInvoices = async () => {
       try {
         const response = await fetch(
-          "https://pharmacy-backend-beta.vercel.app/auth/get-invoice",
+          "https://pharmacy-backend-beta.vercel.app/invoice/get-invoice",
           {
             method: "GET",
             headers: {
@@ -60,7 +60,7 @@ function UserInvoices({ role }) {
 
     try {
       const response = await fetch(
-        `https://pharmacy-backend-beta.vercel.app/auth/delete-invoice/${invoice._id}`,
+        `https://pharmacy-backend-beta.vercel.app/invoice/delete-invoice/${invoice._id}`,
         {
           method: "DELETE",
           headers: {
@@ -171,55 +171,55 @@ function UserInvoices({ role }) {
         ""
       )}
 
-     <div className="table-responsive mt-3">
-       <table className="table table-striped table-hover align-middle text-center responsive-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Invoice Number</th>
-            <th>Invoice Date/Time</th>
-            <th>Grand Total</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredInvoices.length > 0 ? (
-            filteredInvoices.map((inv, index) => (
-              <tr key={inv._id}>
-                <td>{index + 1}</td>
-                <td>{inv.invoiceNumber}</td>
-                <td>{new Date(inv.createdAt).toLocaleString()}</td>
-                <td>{inv.grandTotal.toFixed(2)}</td>
-                <td>
-                  <button
-                    className="btn btn-outline-dark btn-sm mx-1"
-                    onClick={() => viewInvoice(inv._id)}
-                  >
-                    <i className="fa-solid fa-eye"></i>
-                  </button>
-                  {role === "admin" ? (
+      <div className="table-responsive mt-3">
+        <table className="table table-striped table-hover align-middle text-center responsive-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Invoice Number</th>
+              <th>Invoice Date/Time</th>
+              <th>Grand Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredInvoices.length > 0 ? (
+              filteredInvoices.map((inv, index) => (
+                <tr key={inv._id}>
+                  <td>{index + 1}</td>
+                  <td>{inv.invoiceNumber}</td>
+                  <td>{new Date(inv.createdAt).toLocaleString()}</td>
+                  <td>{inv.grandTotal.toFixed(2)}</td>
+                  <td>
                     <button
-                      className="btn btn-outline-danger btn-sm mx-1"
-                      onClick={() => handleDeleteInvoice(inv)}
+                      className="btn btn-outline-dark btn-sm mx-1"
+                      onClick={() => viewInvoice(inv._id)}
                     >
-                      <i className="fas fa-trash"></i>
+                      <i className="fa-solid fa-eye"></i>
                     </button>
-                  ) : (
-                    ""
-                  )}
+                    {role === "admin" ? (
+                      <button
+                        className="btn btn-outline-danger btn-sm mx-1"
+                        onClick={() => handleDeleteInvoice(inv)}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center">
+                  No Invoices found
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="text-center">
-                No Invoices found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-     </div>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
