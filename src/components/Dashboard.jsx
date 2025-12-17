@@ -159,7 +159,7 @@ function Dashboard({
       id: 3,
       icon: "fa-chart-line",
       title: "Non-Discounted Profit",
-      count: `Rs ${sales.totalSalesPrice - sales.totalActualPrice}`,
+      count: `Rs ${(sales.totalSalesPrice - sales.totalActualPrice).toFixed(2)}`,
       description: "Profit without discounts.",
     },
     {

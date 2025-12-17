@@ -126,8 +126,8 @@ function SupplierDetails() {
 
         <div className="card shadow-lg mt-5 p-4">
           <h4 className="mb-3">Medicine List</h4>
-          <div className="table-responsive">
-            <table className="table table-striped table-hover text-center my-3">
+          <div className="table-responsive mt-3">
+            <table className="table table-striped table-hover align-middle text-center responsive-table">
               <thead>
                 <tr>
                   <th>Medicine ID</th>

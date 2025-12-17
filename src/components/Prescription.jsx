@@ -10,7 +10,7 @@ function Prescription({medicines}) {
   return (
     <div className='conatainer'>
         <h1 style={{ textAlign: 'center' }} className='my-3'>PHARMACY MANAGEMENT SYSTEM</h1>
-            <h2 style={{ textAlign: 'center' }} className='my-3 mb-3'>EDIT-MEDICINE</h2>
+            <h2 style={{ textAlign: 'center' }} className='my-3 mb-3'>Medicine Prescription</h2>
             <label className="form-label my-3"><b>Search Medicine</b></label>
                 <input
                     type="text"
@@ -19,7 +19,8 @@ function Prescription({medicines}) {
                     value={searchQuery}
                     onChange={(e) => setsearchQuery(e.target.value)}
                 />
-      <table className="table table-striped table-hover text-left my-3">
+     <div className='table-responsive mt-3'>
+         <table className="table table-striped table-hover align-middle text-center responsive-table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -50,6 +51,8 @@ function Prescription({medicines}) {
                         )}
                     </tbody>
                 </table>
+
+     </div>
 
                 
     </div>

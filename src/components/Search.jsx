@@ -456,7 +456,9 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
             )}
           </div>
 
-          {/* Right Side - Stock Indicators */}
+         
+        </div>
+         {/* Right Side - Stock Indicators */}
           <div className="d-flex justify-content-end" style={{ marginTop: 30 }}>
             <div className="d-flex align-items-center me-3">
               <span
@@ -498,9 +500,9 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
               <span className="ms-2">Expired Medicine: {expireMedicines}</span>
             </div>
           </div>
-        </div>
 
-        <table className="table table-striped table-hover text-center my-3">
+       <div className='table-responsive mt-3'>
+         <table className="table table-striped table-hover align-middle text-center responsive-table">
           <thead>
             <tr>
               <th>#</th>
@@ -560,6 +562,8 @@ function Search({ cart, setCart, medicines, setMedicines, role }) {
             )}
           </tbody>
         </table>
+
+       </div>
       </div>
 
       <div

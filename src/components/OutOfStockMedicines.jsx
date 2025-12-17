@@ -57,7 +57,7 @@ function OutOfStockMedicines({outOfStock}) {
         return (
             <div className='container'>
                 <h1 style={{ textAlign: 'center' }} className='my-3'>PHARMACY MANAGEMENT SYSTEM</h1>
-                <h2 style={{ textAlign: 'center' }} className='my-3 mb-3'>LOW STOCK-MEDICINES</h2>
+                <h2 style={{ textAlign: 'center' }} className='my-3 mb-3'>OUT OF STOCK MEDICINES</h2>
                 <label className="form-label my-3"><b>Search Medicine</b></label>
                 <input
                     type="text"
@@ -81,7 +81,8 @@ function OutOfStockMedicines({outOfStock}) {
         
     </div>
     </div>
-                <table className="table table-striped table-hover text-center my-3">
+               <div className='table-responsive mt-3'>
+                 <table className="table table-striped table-hover align-middle text-center responsive-table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -113,6 +114,8 @@ function OutOfStockMedicines({outOfStock}) {
                         )}
                     </tbody>
                 </table>
+
+               </div>
             </div>
         )
 }

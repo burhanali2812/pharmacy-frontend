@@ -58,7 +58,8 @@ const Bill = () => {
                         <p><b>Date:</b> {dateTime.date}</p>
                         <p><b>Time:</b> {dateTime.time}</p>
                     </div>
-                    <table className="table table-striped text-center">
+              <div className="table-responsive mt-3">
+                     <table className="table table-striped table-hover align-middle text-center responsive-table">
                         <thead>
                             <tr>
                                 <th>Medicine</th>
@@ -78,6 +79,7 @@ const Bill = () => {
                             ))}
                         </tbody>
                     </table>
+              </div>
                     <hr />
                     <p className="text-end"><b>Total:</b> Rs {billData.grandTotal.toFixed(2)}</p>
                     <p className="text-end"><b>Discount:</b> {billData.discount}% </p>

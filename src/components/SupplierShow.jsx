@@ -422,7 +422,8 @@ function SupplierShow({ role }) {
           ""
         )}
 
-        <table className="table table-striped table-hover text-center my-3">
+       <div className='table-responsive mt-3'>
+         <table className="table table-striped table-hover align-middle text-center responsive-table">
           <thead>
             <tr>
               <th>#</th>
@@ -482,6 +483,8 @@ function SupplierShow({ role }) {
             )}
           </tbody>
         </table>
+
+       </div>
       </div>
 
       <div

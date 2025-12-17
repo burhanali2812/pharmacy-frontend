@@ -61,7 +61,8 @@ function Bill_invoice() {
                 {new Date(invoice.createdAt).toLocaleString()}
               </p>
             </div>
-            <table className="table table-striped text-center">
+          <div className="table-responsive mt-3">
+              <table className="table table-striped table-hover align-middle text-center responsive-table">
               <thead>
                 <tr>
                   <th>Medicine</th>
@@ -81,6 +82,8 @@ function Bill_invoice() {
                 ))}
               </tbody>
             </table>
+
+          </div>
             <hr />
             <p className="text-end">
               <b>Total:</b> Rs {invoice.total.toFixed(2)}
