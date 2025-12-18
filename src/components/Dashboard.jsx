@@ -316,7 +316,7 @@ function Dashboard({
                       className="list-group-item bg-dark text-white d-flex justify-content-between"
                     >
                       <span>{med.name}</span>
-                      <span className="text-warning">{med.expire}</span>
+                      <span className="text-warning"> {med.expire ? new Date(med.expire).toLocaleDateString() : "N/A"}</span>
                     </li>
                   ))}
                 </ul>

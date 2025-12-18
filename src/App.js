@@ -31,16 +31,17 @@ function App() {
   const [lowStock, setLowStock] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [user, setUser] = useState(null);
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cart, setCart] = useState([]);
 
   const token = useAuth();
   const role = localStorage.getItem("role");
 
   const [salesManUsers, setSalesManUsers] = useState([]);
   useEffect(() => {
+    if (!token) return;
+       const savedCart = JSON.parse(localStorage.getItem("cart"));
+       setCart(savedCart || []);
+       
     const getUsers = async () => {
       try {
         const response = await fetch(

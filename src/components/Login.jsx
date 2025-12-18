@@ -330,15 +330,7 @@ function Login() {
                     )}
                   </button>
 
-                  {/* Forgot Password Link */}
-                  <div className="text-center">
-                    <a
-                      href="/"
-                      className="forgot-link text-decoration-none small"
-                    >
-                      <i className="fas fa-key me-1"></i>Forgot Password?
-                    </a>
-                  </div>
+             
                 </form>
               </div>
             </div>

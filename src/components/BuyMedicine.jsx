@@ -8,8 +8,8 @@ function BuyMedicine({ cart, setCart, medicines, setMedicines }) {
 
 
     const filteredMedicines = medicines.filter((med) =>
-        med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (med.sID && String(med.sID).toLowerCase().includes(searchQuery.toLowerCase()))
+        med.name?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+        (med.sID && String(med.sID)?.toLowerCase().includes(searchQuery?.toLowerCase()))
     );
     const outOfStockCount = medicines.filter(med => med.quantity === 0).length;
     const lowStockCount = medicines.filter(med => med.quantity > 0 && med.quantity < 10).length;
@@ -106,7 +106,7 @@ function BuyMedicine({ cart, setCart, medicines, setMedicines }) {
                                         <td>{med.quantity}</td>
                                         <td>{med.price}</td>
                                         <td>{med.supplier}</td>
-                                        <td>{med.expire}</td>
+                                        <td>{(new Date(med.expire))?.toLocaleDateString()}</td>
                                         <td>
                                             <button className="btn btn-outline-dark btn-sm mx-1" onClick={() => handleBuyButton(med)}>
                                                 <i className="fas fa-cart-plus"></i>
